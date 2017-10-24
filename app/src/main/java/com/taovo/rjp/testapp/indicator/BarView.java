@@ -5,6 +5,9 @@ package com.taovo.rjp.testapp.indicator;
  * @email : jimbo922@163.com
  */
 
+/**
+ * 滑块对象
+ */
 public class BarView {
     private int leftX;
     private int leftY;

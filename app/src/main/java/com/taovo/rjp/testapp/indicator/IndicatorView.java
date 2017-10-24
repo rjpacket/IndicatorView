@@ -52,6 +52,10 @@ public class IndicatorView extends View {
         selectPointPaint.setColor(Color.parseColor("#eb1c42"));
     }
 
+    /**
+     * 关联viewpager
+     * @param viewPager
+     */
     public void setViewPager(ViewPager viewPager) {
         childCount = viewPager.getAdapter().getCount();
         initPoints();
@@ -61,6 +65,9 @@ public class IndicatorView extends View {
                 scrollPosition = position;
                 Log.d("------->", "position:" + position + ", positionOffset:" + positionOffset + ", positionOffsetPixels:" + positionOffsetPixels);
                 ratio = positionOffset;
+                if(ratio >= 1 || ratio <= 0){
+                    return;
+                }
                 compute();
                 invalidate();
             }
@@ -68,6 +75,9 @@ public class IndicatorView extends View {
             @Override
             public void onPageSelected(int position) {
                 selectPosition = position;
+                ratio = 0;
+                compute();
+                invalidate();
             }
 
             @Override
@@ -75,6 +85,9 @@ public class IndicatorView extends View {
 
             }
         });
+        ratio = 0;
+        compute();
+        invalidate();
     }
 
     /**

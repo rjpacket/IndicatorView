@@ -5,6 +5,9 @@ package com.taovo.rjp.testapp.indicator;
  * @email : jimbo922@163.com
  */
 
+/**
+ * 圆点对象
+ */
 public class PointView {
     private int x;
     private int y;
