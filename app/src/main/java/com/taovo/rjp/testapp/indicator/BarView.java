@@ -17,6 +17,11 @@ public class BarView {
 
     private int radius;
 
+    private int bezierTopX;
+
+    private int bezierTopY;
+    private int bezierBottomY;
+
     public int getLeftX() {
         return leftX;
     }
@@ -55,5 +60,29 @@ public class BarView {
 
     public void setRadius(int radius) {
         this.radius = radius;
+    }
+
+    public int getBezierTopY() {
+        return bezierTopY;
+    }
+
+    public void setBezierTopY(int bezierTopY) {
+        this.bezierTopY = bezierTopY;
+    }
+
+    public int getBezierTopX() {
+        return bezierTopX;
+    }
+
+    public void setBezierTopX(int bezierTopX) {
+        this.bezierTopX = bezierTopX;
+    }
+
+    public int getBezierBottomY() {
+        return bezierBottomY;
+    }
+
+    public void setBezierBottomY(int bezierBottomY) {
+        this.bezierBottomY = bezierBottomY;
     }
 }

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -27,10 +27,11 @@ public class IndicatorView extends View {
     private int selectPosition;
     private int scrollPosition;  //这个是滑动的时候 要到达的position
     private float ratio;
-    private int pointSpace = 80; // 球之间的空隙
-    private int radius = 40; // 球半径
+    private int pointSpace = 120; // 球之间的空隙
+    private int radius = 20; // 球半径
     private List<PointView> pointViews;
     private BarView barView;
+    private Path bezierPath;
 
     public IndicatorView(Context context) {
         this(context, null);
@@ -54,6 +55,7 @@ public class IndicatorView extends View {
 
     /**
      * 关联viewpager
+     *
      * @param viewPager
      */
     public void setViewPager(ViewPager viewPager) {
@@ -65,7 +67,7 @@ public class IndicatorView extends View {
                 scrollPosition = position;
                 Log.d("------->", "position:" + position + ", positionOffset:" + positionOffset + ", positionOffsetPixels:" + positionOffsetPixels);
                 ratio = positionOffset;
-                if(ratio >= 1 || ratio <= 0){
+                if (ratio >= 1 || ratio <= 0) {
                     return;
                 }
                 compute();
@@ -111,7 +113,7 @@ public class IndicatorView extends View {
         for (int i = 0; i < pointViews.size(); i++) {
             PointView pointView = pointViews.get(i);
             pointView.setRadius(radius);
-            pointView.setX(radius * (2 * i + 1) + pointSpace* i);
+            pointView.setX(radius * (2 * i + 1) + pointSpace * i);
             pointView.setY(radius);
             pointView.setChecked(selectPosition == i);
         }
@@ -119,31 +121,61 @@ public class IndicatorView extends View {
         PointView selectPointView = pointViews.get(selectPosition);
         int selectX = selectPointView.getX();
         int selectY = selectPointView.getY();
-        if(selectPosition <= scrollPosition){
+        if (selectPosition <= scrollPosition) {
             //往右是增加右边圆的圆心
-            barView.setLeftX(selectX);
-            barView.setLeftY(selectY);
-            barView.setRightX((int) (selectX + (2 * radius + pointSpace) * ratio));
-            barView.setRightY(selectY);
-            barView.setRadius(radius);
-        }else{
+            if (ratio <= 0.5) {
+                barView.setLeftX(selectX);
+                barView.setLeftY(selectY);
+                barView.setRightX((int) (selectX + (2 * radius + pointSpace) * ratio));
+                barView.setRightY(selectY);
+                barView.setRadius(radius);
+                barView.setBezierTopX(((barView.getLeftX() + barView.getRightX()) / 2));
+                barView.setBezierTopY((int) (radius * 1.0 / 4 + 3 * ratio * radius / 2));
+                barView.setBezierBottomY((int) (radius * 1.0 * 7 / 4 - 3 * ratio * radius / 2));
+            } else {
+                barView.setLeftX((int) (selectX + (2 * radius + pointSpace) * ratio));
+                barView.setLeftY(selectY);
+                PointView pointView = pointViews.get(selectPosition + 1);
+                barView.setRightX(pointView.getX());
+                barView.setRightY(pointView.getY());
+                barView.setRadius(radius);
+                barView.setBezierTopX(((barView.getLeftX() + barView.getRightX()) / 2));
+                barView.setBezierTopY((int) (radius * 1.0 * 7 / 4 - 3 * ratio * radius / 2));
+                barView.setBezierBottomY((int) (radius * 1.0 / 4 + 3 * ratio * radius / 2));
+            }
+        } else {
             //往左是减少左边圆的圆心
-            barView.setRightX(selectX);
-            barView.setRightY(selectY);
-            barView.setLeftX((int) (selectX - (2 * radius + pointSpace) * (1 - ratio)));
-            barView.setLeftY(selectY);
-            barView.setRadius(radius);
+            if (ratio >= 0.5) {
+                barView.setRightX(selectX);
+                barView.setRightY(selectY);
+                barView.setLeftX((int) (selectX - (2 * radius + pointSpace) * (1 - ratio)));
+                barView.setLeftY(selectY);
+                barView.setRadius(radius);
+                barView.setBezierTopX(((barView.getLeftX() + barView.getRightX()) / 2));
+                barView.setBezierTopY((int) (radius * 1.0 * 7 / 4 - 3 * ratio * radius / 2));
+                barView.setBezierBottomY((int) (radius * 1.0 / 4 + 3 * ratio * radius / 2));
+            } else {
+                barView.setRightX((int) (selectX - (2 * radius + pointSpace) * (1 - ratio)));
+                barView.setRightY(selectY);
+                PointView pointView = pointViews.get(selectPosition - 1);
+                barView.setLeftX(pointView.getX());
+                barView.setLeftY(pointView.getY());
+                barView.setRadius(radius);
+                barView.setBezierTopX(((barView.getLeftX() + barView.getRightX()) / 2));
+                barView.setBezierTopY((int) (radius * 1.0 / 4 + 3 * ratio * radius / 2));
+                barView.setBezierBottomY((int) (radius * 1.0 * 7 / 4 - 3 * ratio * radius / 2));
+            }
         }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //设置view宽高 不设置就是默认全屏view，没办法改变位置
-        if(pointViews != null && pointViews.size() > 0) {
+        if (pointViews != null && pointViews.size() > 0) {
             int width = pointViews.get(pointViews.size() - 1).getX() + radius;
             int height = radius * 2;
             setMeasuredDimension(width, height);
-        }else{
+        } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
@@ -153,12 +185,18 @@ public class IndicatorView extends View {
         super.onDraw(canvas);
         //画圆点
         for (PointView pointView : pointViews) {
-            canvas.drawCircle(pointView.getX(), pointView.getY(), pointView.getRadius(), pointView.isChecked()?selectPointPaint:pointPaint);
+            canvas.drawCircle(pointView.getX(), pointView.getY(), pointView.getRadius(), pointView.isChecked() ? selectPointPaint : pointPaint);
         }
         //画bar的头尾圆
         canvas.drawCircle(barView.getLeftX(), barView.getLeftY(), barView.getRadius(), selectPointPaint);
         canvas.drawCircle(barView.getRightX(), barView.getRightY(), barView.getRadius(), selectPointPaint);
-        //画bar的中间rect
-        canvas.drawRect(new RectF(barView.getLeftX(), 0, barView.getRightX(), radius * 2), selectPointPaint);
+        //画bar的中间rect  贝塞尔画法
+        bezierPath = new Path();
+        bezierPath.moveTo(barView.getLeftX(), 0);
+        bezierPath.quadTo(barView.getBezierTopX(), barView.getBezierTopY(), barView.getRightX(), 0);
+        bezierPath.lineTo(barView.getRightX(), 2 * radius);
+        bezierPath.quadTo(barView.getBezierTopX(), barView.getBezierBottomY(), barView.getLeftX(), 2 * radius);
+        bezierPath.lineTo(barView.getLeftX(), 0);
+        canvas.drawPath(bezierPath, selectPointPaint);
     }
 }
