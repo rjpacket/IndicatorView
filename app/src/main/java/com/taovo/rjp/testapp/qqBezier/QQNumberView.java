@@ -18,6 +18,9 @@ import android.view.View;
  * @email : jimbo922@163.com
  */
 
+/**
+ * qq 气泡view
+ */
 public class QQNumberView extends View {
     private Context mContext;
     private int number;
@@ -81,7 +84,7 @@ public class QQNumberView extends View {
     }
 
     /**
-     * 手指抬起，view恢复 或者 消失
+     * 手指抬起，view恢复
      */
     private void resetView(float x, float y) {
         Point startPoint = new Point((int) x, (int) y);
@@ -97,6 +100,11 @@ public class QQNumberView extends View {
         });
     }
 
+    /**
+     * 计算所有需要的位置坐标
+     * @param x
+     * @param y
+     */
     private void compute(float x, float y) {
         // 记录控制点圆心坐标
         controllerView.setX((int) x);

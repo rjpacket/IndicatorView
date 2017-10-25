@@ -1,6 +1,6 @@
 ### 一、先看效果
 
-![qq-bezier.gif](http://upload-images.jianshu.io/upload_images/5994029-7c0e9ae06b72abdd.gif?imageMogr2/auto-orient/strip)
+![viewpager指示器.gif](http://upload-images.jianshu.io/upload_images/5994029-178321f2b401f9a6.gif?imageMogr2/auto-orient/strip)
 
 
 ### 二、分析
@@ -268,4 +268,4 @@ ACTION_DOWN 的时候，如果已经拖拽过了（用 mIsMoreDrag 标记），�
 
 到这就全部结束了。
 
-附上 [简书地址](http://www.jianshu.com/p/2d5dbe530b42)
+附上 [github地址](https://github.com/rjpacket/IndicatorView/tree/qq-bezier-master)

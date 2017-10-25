@@ -5,6 +5,9 @@ package com.taovo.rjp.testapp.qqBezier;
  * @email : jimbo922@163.com
  */
 
+/**
+ * 控制器类
+ */
 public class ControllerView {
     private int x;
     private int y;
