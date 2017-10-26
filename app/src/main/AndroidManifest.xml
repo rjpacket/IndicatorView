@@ -15,9 +15,10 @@
         <activity android:name=".MainActivity">
         </activity>
         <activity android:name=".ViewPagerActivity">
-
         </activity>
         <activity android:name=".qqBezier.QQNumberActivity">
+        </activity>
+        <activity android:name=".ruler.RulerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
