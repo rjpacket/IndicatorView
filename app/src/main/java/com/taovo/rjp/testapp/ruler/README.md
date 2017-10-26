@@ -1,6 +1,6 @@
 ### 一、先看效果
 
-![viewpager指示器.gif](http://upload-images.jianshu.io/upload_images/5994029-178321f2b401f9a6.gif?imageMogr2/auto-orient/strip)
+![ruler-view.gif](http://upload-images.jianshu.io/upload_images/5994029-49b1efeedfe2de4f.gif?imageMogr2/auto-orient/strip)
 
 
 ### 二、分析
@@ -175,4 +175,4 @@
 
 到这基本结束。
 
-附上 [github地址](https://github.com/rjpacket/IndicatorView)
+附上 [简书地址](http://www.jianshu.com/p/4a497e875928)
