@@ -9,9 +9,31 @@
     tools:context="com.taovo.rjp.testapp.ruler.RulerActivity"
     android:gravity="center"
     >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="30dp"
+        >
+        <TextView
+            android:id="@+id/tv_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="--"
+            android:textSize="30sp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="kg"
+            />
+    </LinearLayout>
+
     <com.taovo.rjp.testapp.ruler.RulerView
+        android:id="@+id/ruler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-
 </LinearLayout>
