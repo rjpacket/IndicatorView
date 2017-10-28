@@ -91,7 +91,7 @@ public class RulerView extends View {
         if (heightMode == MeasureSpec.EXACTLY) {
             height = MeasureSpec.getSize(heightMeasureSpec);
         } else {
-            height = (int) (mContext.getResources().getDisplayMetrics().density * 60 + 0.5);
+            height = (int) (mContext.getResources().getDisplayMetrics().density * 200 + 0.5);
         }
         setMeasuredDimension(width, height);
 

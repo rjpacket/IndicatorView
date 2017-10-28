@@ -87,6 +87,7 @@
                 releaseVelocityTracker();
                 break;
         }
+        //对每一个Event都需要交给速度追踪器
         if (mVelocityTracker != null) {
             mVelocityTracker.addMovement(event);
         }
@@ -174,6 +175,86 @@
     scrollTo(x, 0);
     computeAndCallback(x);
 ```
-首先获取滚动的长度，如果对 space 取余有余，说明基准线在两个刻度之间，需要减去
+首先获取滚动的长度，如果对 space 取余有余，说明基准线在两个刻度之间，需要减去这个余数。得到 space 的整倍数的偏移之后，
+还要判断边界，如果 x 在基准线右边，说明滚动过头了，需要回滚到基准线上。由于基准线是偏移过的，所以 scrollTo 的时候需要补上这个偏移；
+如果 x 在基准线左边，说明向左滚过头了，也需要回滚到基准线上，同理，后面也要加上偏移的量。最后调用 scrollTo() 就可以回到基准线上。
+
+再来看下 onDraw() 方法：
+```
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        for (int i = startValue * 10; i < endValue * 10 + 1; i++) {
+            int lineHeight = 80;
+            if (i % 5 == 0) {
+                if (i % 10 == 0) {
+                    lineHeight = 120;
+                    int x = (i - startValue * 10) * space;
+                    if (x > 0 || x < width) {
+                        canvas.drawText(String.valueOf(i / 10), x, lineHeight + 50, txtPaint);
+                    }
+                }
+            } else {
+                lineHeight = 50;
+            }
+            int startX = (i - startValue * 10) * space;
+            if (startX > 0 || startX < width) {
+                canvas.drawLine(startX, 0, startX, lineHeight, grayLinePaint);
+            }
+        }
+        int startX = BASELINE_OFFSET + getScrollX() - BASELINE_OFFSET % space;
+        canvas.drawLine(startX, 0, startX, 180, centerLinePaint);
+    }
+```
+这个方法相比较第一个，有所改动，绘制刻度线的时候不需要再加上偏移量了，直接从 View 的起始开始绘制，滚动就交给 scrollTo() 方法处理了。
+这里绘制基准线的时候同样需要注意，除了加上基准偏移，还要扣除余数，否则，基准线对不准刻度线。
+
+滚动还必须要覆盖的一个方法是 computeScroll()：
+```
+    @Override
+    public void computeScroll() {
+        if (mScroller.computeScrollOffset()) {
+            int x = mScroller.getCurrX();
+            scrollTo(x, 0);
+            computeAndCallback(x);
+            postInvalidate();
+        } else {
+            if (isFastScroll) {
+                int x = mScroller.getCurrX() + BASELINE_OFFSET % space;
+                if (x % space != 0) {
+                    x -= x % space;
+                }
+                scrollTo(x, 0);
+                computeAndCallback(x);
+                postInvalidate();
+            }
+        }
+    }
+```
+这里的处理也是要注意细节，if 下面的代码没的说，但是 else 下面的代码是只有快速惯性滚动才能去判断，否则，手指触摸的时候也会去计算位置，导致移不动，
+这个时候上面的 isFastScroll 就有用处了。另外，这里也要加上基准线扣除的余数，同时还要对space取余数。
+
+我们发现只要滚动，后面都会执行 computeAndCallback() 方法：
+```
+    /**
+     * 计算并回调位置信息
+     *
+     * @param scrollX
+     */
+    private void computeAndCallback(int scrollX) {
+        if (mListener != null) {
+            int finalX = BASELINE_OFFSET + scrollX;
+            if (finalX % space != 0) {
+                finalX -= finalX % space;
+            }
+            mListener.onRulerSelected((endValue - startValue) * 10, startValue * 10 + finalX / space);
+        }
+    }
+```
+就是一个回调，返回当前刻度下的值，这个值需要我们计算。
+我们首先拿到基准线对准的 finalX 值，这个值确定下来，减去对 space 的取余数，就能得到对应的刻度个数 finalX / space，只要加上 startValue 就好了。
+onRulerSelected 方法第一个参数是长度，没有特别用处。
+
+到这，全部结束了。
 
 附上 [简书地址](http://www.jianshu.com/p/4a497e875928)
